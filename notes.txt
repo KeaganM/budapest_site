@@ -1,0 +1,7 @@
+ to get a php webserver up and running: 
+
+C:\Users\Keagan\atomprojects\budapest_site>php -S 192.168.86.25:8000
+
+make sure to run it in the directory with your files
+
+also you will have to go into the php.ini file to uncomment extra extensions if you want new stuff. 

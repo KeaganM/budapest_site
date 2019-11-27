@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- resources:  -->
+  <!-- https://github.com/daneden/animate.css -->
+  <!-- https://getbootstrap.com/docs/4.0/content/tables/ -->
+  <!-- https://holocaustgeographies.geo.txstate.edu/ -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- <link rel="stylesheet" href="animate.css"> -->
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+  integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+  crossorigin=""/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+  integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+  crossorigin=""></script>
+</head>
+<body>
+  <div class="container top-nav navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="">
+      <a class="navbar-brand" href="#">
+        <img src="logo.png" class="logo" />
+      </a>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav">
+        <li class="nav-item" style="background-color:red;">
+          <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">People</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Research</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Data</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Publications</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Announcements</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  </div>
+
+
+ <div id="side-nav" class="container side-nav">
+   <button type="button" class="side-bar-toggle btn btn-danger" onclick="slideOutLeft('#side-nav','-638')">|||</button>
+   <ul class = "nav nav-tabs mt-3">
+     <li class = "nav-item side-nav-item"><a href="#query" class="nav-link active" data-toggle="tab" >Query</a></li>
+     <li class = "nav-item side-nav-item"><a href="#results" class="nav-link" data-toggle="tab" >Results</a></li>
+     <li class = "nav-item side-nav-item"><a href="#about" class="nav-link" data-toggle="tab" >About</a></li>
+   </ul>
+   <div class="container-fluid mt-3">
+     <div class="tab-content">
+       <div role="tabpanel" id ="query" class="tab-pane fade show active">
+         <h2>Query Tool</h2>
+    <div class="container">
+      <form method="post">
+        <div class="row">
+          <div class="col-sm">
+            Last name:<br /> <input id = "lastname" type="text" name="lastname" required/><br /><br />
+          </div>
+          <div class="col-sm">
+            First name:<br /> <input id="firstname" type="text" name="firstname" class="query-input" /><br /><br />
+          </div>
+        </div>
+        <div class="row">
+          <a class="btn - btn-danger" type="button" data-toggle="collapse" href="#advanceQuery" role="button" aria-expanded="false" aria-controls="collapseExample">Advance Query</a>
+        </div>
+        <div class="row">
+          <div class="collapse" id="advanceQuery">
+            <div class="card card-body custom-card">
+              <div class="row">
+                <div class="col-sm">
+                  Maiden name:<br /> <input id = "maidenname" type="text" name="maidenname" class="query-input" /><br /><br />
+                </div>
+                <div class="col-sm">
+                  Gender:<br /> <input id="gender" type="text" name="gender" class="query-input" /><br /><br />
+                </div>
+                <div class="col-sm">
+                  Birth place:<br /> <input id="birthplace" type="text" name="birthplace" class="query-input" /><br /><br />
+                </div>
+                <div class="col-sm">  
+                  Birth year:<br /> <input id="birthyear" type="text" name="birthyear" class="query-input" /><br /><br />
+                </div>
+                <div class="col-sm">
+                  Mother:<br /> <input id="mother" type="text" name="mother" class="query-input" /><br /><br />
+                </div>
+                <div class="col-sm">
+                  Address:<br /> <input id="address" type="text" name="address" class="query-input" /><br /><br />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="containe row mt-1">
+          <div id ="spinner" class="spinner-border text-danger" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+          <div class="ml-1">
+            <input id ="submit" class ="btn btn-danger" type="button" value="Submit" onclick="getNames()" />
+          </div>
+        </div>
+      </form>
+    </div>
+     <!-- <button type="button" onclick="testBounceOutLeft()">test</button> -->
+   </div>
+       <div role="tabpanel" id ="results" class="tab-pane fade show">
+         <div class="container">
+           <div id="personInfo" class="container mt-3 custom-table">
+             <table id="table" class="table table-sm table-responsive table-secondary table-wrapper-scroll-y my-custom-scrollbar">
+               <thead>
+                 <!--["First_name","Last_name","title_maiden_name","Gender","Birth_Place","Birth_Year","Mother","Address","x","y"]; -->
+                 <tr>
+                   <th>First Name</th>
+                   <th>Last Name</th>
+                   <th>Maiden Name</th>
+                   <th>Gender</th>
+                   <th>Birth Place</th>
+                   <th>Birth Year</th>
+                   <th>Mother</th>
+                   <th>Address</th>
+                   <th>X</th>
+                   <th>Y</th>
+                 </tr>
+               </thead>
+             </table>
+           </div>
+         </div>
+       </div>
+       <div role="tabpanel" id ="about" class="tab-pane fade show">
+         <h2>About</h2>
+         <h4>General Notes:</h4>
+         <ul>
+           <li>
+             This is a early version of the site, more to come.
+           </li>
+           <li>
+             Right now it uses a local sqlite database. The php file will have to
+             be redone to accept a mysql database.
+           </li>
+           <li>
+             Users can query one field or multiple fields; the javascript and
+             php function are set up in a way to easily accept more fields
+           </li>
+           <li>
+             Queried results will appear in the results table and on the map. Some
+             good last names to try is "Adler" and "Kohn". Only the first 100
+             results are queried but hopefully that should be enough to find
+             what you are looking for. I did this because the site would get
+             locked up if you queried for something like all males. I do not
+             know if this is beacuse it is a sqlite db or maybe there are a few
+             things I am missing?
+           </li>
+           <li>
+             The markers that appear do have popups which will appear when clicked
+           </li>
+         </ul>
+         <h4>Future Additions:</h4>
+         <ul>
+           <li>
+             Still want to add a section to send emails/requests if a user has
+             found an error or wants to contact the admin.
+           </li>
+           <li>
+             code still needs to be commeted and refactored
+           </li>
+           <li>
+             set up sql to utilize %LIKE% query, and fix up advance query
+           </li>
+           <li>
+             general css cleaning up
+           </li>
+           <li>
+             attribution section
+           </li>
+           <li>
+             leaflet plugins, basemaps, scalebar, etc.
+           </li>
+         </ul>
+       </div>
+     </div>
+     </div>
+   </div>
+  <div id="tableWrapper"></div>
+  <div id="legend" class="legend">
+    <h4>Legend</h4>
+    <table id="legendTable"></table>
+  </div>
+  <div id="map_01"></div>
+  <!-- Modal -->
+<!-- <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+  <script src="js/main.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"
+          integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>
