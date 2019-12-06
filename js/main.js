@@ -3,12 +3,16 @@
 *
 * https://laracasts.com/discuss/channels/javascript/variable-outside-ajax-request
 * https://medium.com/@maptastik/loading-external-geojson-a-nother-way-to-do-it-with-jquery-c72ae3b41c01
-*
+* https://stackoverflow.com/questions/990904/remove-accents-diacritics-in-a-string-in-javascript/37511463#37511463
 **/
 
-/** Initialize variables ******************************************************/
+/*******************************************************************************
+********************* Initialize variables *************************************
+*******************************************************************************/
 
 var new_html;
+
+var database_php_script = "connect_sqlite.php"
 
 var map = L.map('map_01',{
   zoomControl:false
@@ -34,10 +38,20 @@ var legendTable = document.getElementById("legendTable")
 
 var spinner = document.getElementById("spinner");
 
+/*******************************************************************************
+************************* Functions ********************************************
+*******************************************************************************/
 
-/** Initialize variables ******************************************************/
+/*******************************************************************************
+ * Normalizes strings to NFD Unicode normal form.
+ * @param  {String} string    a string
+ * @return {string}           mapped string
+ */
+function mapString(str) {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+}
 
-/**
+/*******************************************************************************
  * Adds legend elements to div
  * @param  {String} layerName name of the layer
  * @param  {String} color     desired color for the layer
@@ -154,6 +168,8 @@ function getNames(){
     for (var i = 0 ; i < elementIds.length; i++) {
       var element = document.getElementById(elementIds[i]).value;
       if (element !== "") {
+        element = element.toLowerCase(mapString(element));
+        console.log(element)
         data[columnNames[i]] = element;
         data["columnNames"].push(columnNames[i]);
       }
@@ -171,12 +187,12 @@ function getNames(){
 
     $.ajax({
       type:"post",
-      url:"php/connect.php",
+      url:"php/"+ database_php_script,
       data:data,
       success: function(html){
-        // console.log("success")
-        // console.log(typeof new_html)
-        // console.log(html)
+        console.log("success")
+        console.log(typeof new_html)
+        console.log(html)
         new_html = JSON.parse(html);
         // $('#personInfo').html(new_html[0]["first_name"]);
         createTable()
@@ -186,11 +202,9 @@ function getNames(){
 }
 
 /*******************************************************************************
- * A function used to create a JSON structured object which is in turn used to
- * make an Ajax call to a php script to retreive certain datasets based on a
- * series of query inputs.
- * @param  {String} elementID   id of the element
- * @param  {String} slideAmount amount of pixels to move left by
+ * A function designed to create table and popup elements for a webmap.
+ * It makes use of several nested functions to iterate and manipulate over a
+ * queried dataset.
  * @return {none}               null
  */
 function createTable(){
@@ -280,7 +294,6 @@ function createTable(){
     }
   }
 }
-
 
 var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
