@@ -13,30 +13,6 @@ https://docs.phpdoc.org/getting-started/your-first-set-of-documentation.html
 */
 
 /*******************************************************************************
-************************* Initialize Variables *********************************
-*******************************************************************************/
-$fullpost = $_POST;
-
-$host = "localhost";
-$dbusername="root";
-$dbpassword = "j@KK737493962018";
-$dbname = "budapest_test";
-$tablename = "fulldataset";
-$person = new \stdClass();
-$conn = new mysqli ($host,$dbusername,$dbpassword,$dbname);
-mysqli_set_charset($conn, 'utf8');
-
-if (mysqli_connect_error()){
-die('Connect Error ('. mysqli_connect_errno() .') '
-. mysqli_connect_error());
-}
-
-$firstcolumn = $fullpost["columnNames"][0];
-unset($fullpost["columnNames"][0]);
-
-$query = $fullpost[$firstcolumn];
-
-/*******************************************************************************
 ***************************** Functions ****************************************
 *******************************************************************************/
 
@@ -50,17 +26,23 @@ $query = $fullpost[$firstcolumn];
  *
  * @param string $dbname is the name of the database.
  * @param string $tablename is the name of the table.
- * @param string $firstcolumn is the name of the first column in the table.
- * @param string $query is the provided query.
  * @param array $fullpost is the array of column names.
  *
  * @return string
  */
-function createSQL($dbname,$tablename,$firstcolumn,$query,$fullpost) {
-  $sql = "SELECT * FROM ".$dbname.".".$tablename." WHERE ".$firstcolumn." ='".$query."'";
+function createSQL($dbname,$tablename,$fullpost) {
 
-  foreach($fullpost["columnNames"] as $value) {
-    $sql .= "AND ".$value." = '".$fullpost[$value]."'";
+  $index = 0;
+  foreach($fullpost["columnNames"] as $column) {
+    $value = $fullpost[$column]["value"];
+    $conditional = $fullpost[$column]["conditional"];
+
+    if ($index == 0) {
+      $sql = "SELECT * FROM ".$dbname.".".$tablename." WHERE ".$column." ".$conditional." '".$value."' ";
+    } else {
+      $sql .= "AND ".$column." ".$conditional." '".$value."'";
+    }
+    $index++;
   }
 
   return $sql;
@@ -87,11 +69,30 @@ function createArr($results) {
 }
 
 /*******************************************************************************
+************************* Initialize Variables *********************************
+*******************************************************************************/
+$fullpost = $_POST;
+
+$host = "localhost";
+$dbusername="root";
+$dbpassword = "j@KK737493962018";
+$dbname = "budapest_test";
+$tablename = "fulldataset";
+$person = new \stdClass();
+$conn = new mysqli ($host,$dbusername,$dbpassword,$dbname);
+mysqli_set_charset($conn, 'utf8');
+
+if (mysqli_connect_error()){
+die('Connect Error ('. mysqli_connect_errno() .') '
+. mysqli_connect_error());
+}
+
+/*******************************************************************************
 ***************************** Function Calls ***********************************
 *******************************************************************************/
 
 // "SELECT * FROM full_dataset2_Sheet1 WHERE Last_name ='".$lastname."'"
-$sql = createSQL($dbname,$tablename,$firstcolumn,$query,$fullpost);
+$sql = createSQL($dbname,$tablename,$fullpost);
 $results = mysqli_query($conn,$sql);
 $newArr = createArr($results);
 $myJSON = json_encode($newArr);

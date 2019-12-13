@@ -13,16 +13,6 @@ https://docs.phpdoc.org/getting-started/your-first-set-of-documentation.html
 */
 
 /*******************************************************************************
-************************* Initialize Variables *********************************
-*******************************************************************************/
-$fullpost = $_POST;
-$db = new SQLite3("../database/data.db");
-$tablename = "full_dataset";
-$firstcolumn = $fullpost["columnNames"][0];
-unset($fullpost["columnNames"][0]);
-$query = $fullpost[$firstcolumn];
-
-/*******************************************************************************
 ***************************** Functions ****************************************
 *******************************************************************************/
 
@@ -34,18 +24,26 @@ $query = $fullpost[$firstcolumn];
  * of the columns available are iterated upon, and new parts of the sql
  * statment are appended
  *
- * @param string $query is the provided query.
  * @param string $tablename is the name of the table.
  * @param array $fullpost is the array of column names.
- * @param string $firstcolumn is the name of the first column in the table.
  *
  * @return string
  */
-function createSQL($query,$tablename,$fullpost,$firstcolumn) {
-  $sql = "SELECT * FROM ".$tablename." WHERE ".$firstcolumn." ='".$query."'";
+function createSQL($tablename,$fullpost) {
+  // $sql = "SELECT * FROM ".$tablename." WHERE ".$firstcolumn." ".."'".$query_value."'";
 
-  foreach($fullpost["columnNames"] as $value) {
-    $sql .= "AND ".$value." = '".$fullpost[$value]."'";
+  $index = 0;
+  foreach($fullpost["columnNames"] as $column) {
+
+    $value = $fullpost[$column]["value"];
+    $conditional = $fullpost[$column]["conditional"];
+
+    if ($index == 0) {
+      $sql = "SELECT * FROM ".$tablename." WHERE ".$column." ".$conditional." '".$value."' ";
+    } else {
+      $sql .= "AND ".$column." ".$conditional." '".$value."'";
+    }
+    $index++;
   }
 
   $sql .= " COLLATE NOCASE LIMIT 100";
@@ -73,9 +71,17 @@ function createArr($results) {
 }
 
 /*******************************************************************************
+************************* Initialize Variables *********************************
+*******************************************************************************/
+$fullpost = $_POST;
+$db = new SQLite3("../database/data.db");
+$tablename = "raw_data";
+
+/*******************************************************************************
 ***************************** Function Calls ***********************************
 *******************************************************************************/
-$sql = createSQL($query,$tablename,$fullpost,$firstcolumn);
+$sql = createSQL($tablename,$fullpost);
+
 $results = $db->query($sql);
 $newArr = createArr($results);
 $myJSON = json_encode($newArr);
