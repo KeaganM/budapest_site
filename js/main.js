@@ -24,8 +24,8 @@ var dataArray = [];
 var sideNav = document.getElementById("side-nav");
 var sideNavOpen = true;
 
-var dbColumnNames = ["First_name","Last_name","Maiden_name","Gender","Birth_Place","Birth_Year","Mother","Address","x","y","ID"];
-var inputElementIds = ["firstname","lastname","maidenname","gender","birthplace","birthyear","mother","address"];
+var dbColumnNames = ["Title","First_name","Last_name","Maiden_name","Gender","Birth_Place","Birth_Year","Mother","Address","x","y"];
+var inputElementIds = ["title","firstname","lastname","maidenname","gender","birthplace","birthyear","mother","address"];
 var popupElements = ["First_name","Last_name","Address","x","y"];
 
 var geojsonFileNames = ["buda","individual_districts","international_ghetto_location","pest","study_area"];
@@ -167,11 +167,16 @@ function getNames(){
     data["columnNames"] = []
     for (var i = 0 ; i < elementIds.length; i++) {
       var element = document.getElementById(elementIds[i]).value;
+
       if (element !== "") {
-        element = element.toLowerCase(mapString(element));
-        console.log(element)
-        data[columnNames[i]] = element;
-        data["columnNames"].push(columnNames[i]);
+        if (elementIds[i] == "birthyear") {
+          data[columnNames[i]] = {"value":element,"conditional":document.getElementById("birthyear_conditional").value};
+          data["columnNames"].push(columnNames[i]);
+        } else {
+          element = element.toLowerCase(mapString(element));
+          data[columnNames[i]] = {"value":element,"conditional":"="};
+          data["columnNames"].push(columnNames[i]);
+        }
       }
     }
     return data
@@ -185,13 +190,15 @@ function getNames(){
     return null
   }
 
+  console.log(data);
+
     $.ajax({
       type:"post",
       url:"php/"+ database_php_script,
       data:data,
       success: function(html){
         console.log("success")
-        console.log(typeof new_html)
+        // console.log(typeof new_html)
         console.log(html)
         new_html = JSON.parse(html);
         // $('#personInfo').html(new_html[0]["first_name"]);
