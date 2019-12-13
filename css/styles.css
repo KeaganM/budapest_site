@@ -26,7 +26,6 @@ table,td{
 }
 
 
-
 .top-nav {
   border-style: solid;
     box-shadow: 5px 5px 5px #888888;
@@ -64,7 +63,7 @@ table,td{
 
 .my-custom-scrollbar {
   position: absolute;
-  height: 68vh;
+  height: 80vh;
   width: 39rem;
   overflow: auto;
   left: 5px;
