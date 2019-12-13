@@ -75,7 +75,7 @@ $fullpost = $_POST;
 
 $host = "localhost";
 $dbusername="root";
-$dbpassword = "j@KK737493962018";
+$dbpassword = "*******pass*******";
 $dbname = "budapest_test";
 $tablename = "fulldataset";
 $person = new \stdClass();
